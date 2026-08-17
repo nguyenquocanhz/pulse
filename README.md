@@ -1,38 +1,47 @@
+<p align="center">
+  <img src="docs/hero.svg" alt="Pulse — uptime monitoring in one file" width="820">
+</p>
+
+<p align="center">
+  <b>English</b> · <a href="README.vi.md">Tiếng Việt</a>
+</p>
+
 # Pulse
 
-**Uptime monitoring trong một file. Không database. Không dependency.**
+**Uptime monitoring in one file. No database. No dependencies.**
 
-Kiểm tra dịch vụ, hiện status page, cảnh báo khi có sự cố — tất cả trong một tiến trình Node thuần. `git clone` xong chạy ngay, không cài gì.
+Check your services, serve a status page, and alert on failures — all in a single plain Node process. `git clone` and run, nothing to install.
 
 ```bash
-git clone https://github.com/<ban>/pulse.git && cd pulse
+git clone https://github.com/<you>/pulse.git && cd pulse
 cp monitors.example.json monitors.json
 npm start
 ```
 
-Mở `http://localhost:3001`.
+Open `http://localhost:3001`.
 
-- **Zero dependency** — chỉ core Node, không `npm install`
-- **Không database** — lịch sử ghi NDJSON, tự cắt bớt
-- **5 theme** — Slate, Midnight (OLED), Terminal, Nord, Sáng
-- **Cảnh báo** — Telegram, Slack, Discord, Zalo, Messenger; chỉ báo khi đổi trạng thái
-- **`/healthz`** — để dịch vụ ngoài giám sát chính Pulse
+- **Zero dependency** — core Node only, no `npm install`
+- **No database** — history is NDJSON, self-trimming
+- **5 themes** — Slate, Midnight (OLED), Terminal, Nord, Light
+- **2 languages** — English and Vietnamese, switch in the UI
+- **Alerts** — Telegram, Slack, Discord, Zalo, Messenger; only on state change
+- **`/healthz`** — so an external service can watch Pulse itself
 
-Toàn bộ mã đọc hết trong mười phút.
-
----
-
-## Bên trong
-
-- Không framework — status page là một file HTML tĩnh, đổi theme lưu localStorage
-- Lưu trữ là file NDJSON mỗi monitor, không cần dịch vụ ngoài
-- Chạy `node src/cli.js`, hoặc bỏ vào Docker/systemd tuỳ ý
+The whole codebase reads in ten minutes.
 
 ---
 
-## Cấu hình
+## Inside
 
-Toàn bộ nằm trong một file JSON. Xem `monitors.example.json` để có bản đầy đủ.
+- No framework — the status page is one static HTML file; theme and language persist to localStorage
+- Storage is one NDJSON file per monitor, no external service
+- Run with `node src/cli.js`, or drop into Docker/systemd
+
+---
+
+## Configuration
+
+Everything lives in one JSON file. See `monitors.example.json` for a full example, and [`examples/recipes.md`](examples/recipes.md) for ready-made configs per service.
 
 ### Monitor
 
@@ -49,21 +58,21 @@ Toàn bộ nằm trong một file JSON. Xem `monitors.example.json` để có b�
 }
 ```
 
-| Trường | Ý nghĩa |
+| Field | Meaning |
 |---|---|
-| `id` | Bắt buộc, duy nhất. Dùng làm khoá lưu trữ. |
-| `type` | `http` (mặc định) hoặc `tcp` |
-| `url` | Cho HTTP |
-| `host` + `port` | Cho TCP (database, SSH…) |
-| `interval` | Giây giữa các lần kiểm tra (mặc định 60) |
-| `retries` | Số lần thử trước khi coi là down (mặc định 1) |
-| `keyword` | Chuỗi phải có trong nội dung. **Bắt được trường hợp server trả 200 nhưng nội dung hỏng** — thứ mà kiểm theo mã trạng thái hoàn toàn bỏ sót. |
-| `expectStatus` | Mã HTTP coi là thành công (mặc định 2xx–3xx) |
-| `insecure` | `true` để chấp nhận chứng chỉ tự ký |
+| `id` | Required, unique. Used as the storage key. |
+| `type` | `http` (default) or `tcp` |
+| `url` | For HTTP |
+| `host` + `port` | For TCP (databases, SSH…) |
+| `interval` | Seconds between checks (default 60) |
+| `retries` | Attempts before declaring down (default 1) |
+| `keyword` | String that must appear in the body. **Catches the case where a server returns 200 but the content is broken** — something a status-code check misses entirely. |
+| `expectStatus` | HTTP codes treated as success (default 2xx–3xx) |
+| `insecure` | `true` to accept self-signed certificates |
 
-### Kênh cảnh báo
+### Alert channels
 
-Chỉ báo khi **đổi trạng thái** — đúng hai lần: lúc sập và lúc hồi phục. Không spam mỗi chu kỳ.
+Alerts fire **only on state change** — exactly twice: when it goes down, and when it recovers. No spam every cycle.
 
 ```json
 "notifications": [
@@ -73,44 +82,44 @@ Chỉ báo khi **đổi trạng thái** — đúng hai lần: lúc sập và lú
 ]
 ```
 
-| Kênh | Cần gì |
+| Channel | Needs |
 |---|---|
 | `telegram` | Bot token + chat id |
 | `slack` | Incoming Webhook URL |
 | `discord` | Webhook URL |
 | `zalo` | OA access token + user id |
 | `messenger` | Page access token + PSID |
-| `webhook` | URL bất kỳ, nhận JSON đầy đủ trạng thái |
+| `webhook` | Any URL, receives the full state as JSON |
 
 ---
 
-## ⚠️ Lưu ý về Messenger và Zalo
+## ⚠️ A note on Messenger and Zalo
 
-Pulse gửi Messenger và Zalo qua **API chính thức**: Facebook Send API (cần Page + access token) và Zalo Official Account API (cần OA + access token).
+Pulse sends Messenger and Zalo through their **official APIs**: the Facebook Send API (Page + access token) and the Zalo Official Account API (OA + access token).
 
-**Cân nhắc kỹ nếu định gửi bằng cookie tài khoản cá nhân.** Có những thư viện gửi tin Messenger/Zalo bằng cách mượn cookie đăng nhập của bạn — Pulse cố ý không tích hợp cách này, và bạn nên thận trọng nếu tự làm:
+**Think twice before sending via a personal-account cookie.** Some libraries send Messenger/Zalo messages by borrowing your login cookie — Pulse deliberately does not, and you should be cautious if you build it yourself:
 
-- **Vi phạm điều khoản dịch vụ.** Facebook và Zalo đều cấm tự động hóa tài khoản cá nhân. Tài khoản có thể bị khóa, kể cả tài khoản chính bạn đang dùng hằng ngày.
-- **Rất dễ vỡ.** Cookie hết hạn liên tục, và các endpoint nội bộ (`fb_dtsg`, graphql) đổi thường xuyên. Bot loại này chết vặt, mà một công cụ giám sát mà bản thân nó hay chết thì vô nghĩa.
-- **Rủi ro bảo mật.** Cookie đăng nhập tương đương mật khẩu. Nhét vào file cấu hình hay repo là để lộ toàn bộ tài khoản.
+- **Against the terms of service.** Both platforms forbid automating personal accounts. The account — including your main one — can be banned.
+- **Very brittle.** Cookies expire constantly and internal endpoints change often. A monitoring tool that keeps dying is worse than none.
+- **Security risk.** A login cookie is as good as your password. Putting it in a config file or repo exposes the whole account.
 
-Nếu vẫn muốn dùng cho tài khoản của riêng mình, hãy tự chịu rủi ro, để cookie ngoài repo, và đừng dùng tài khoản chính. Đường an toàn là tạo một Bot/OA riêng theo API chính thức.
+If you still want it for your own account, do so at your own risk, keep the cookie out of the repo, and don't use your primary account. The safe path is a dedicated Bot/OA via the official API.
 
 ---
 
-## Endpoint
+## Endpoints
 
-| Đường dẫn | Trả về |
+| Path | Returns |
 |---|---|
-| `/` | Trang trạng thái, tự làm mới 10 giây |
-| `/api/status` | JSON toàn bộ trạng thái (CORS mở, nhúng được) |
-| `/healthz` | `200` khi mọi thứ ổn, `503` khi có dịch vụ sập |
+| `/` | Status page, refreshes every 10s |
+| `/api/status` | Full state as JSON (CORS open, embeddable) |
+| `/healthz` | `200` when all is well, `503` when any service is down |
 
-`/healthz` là để **giám sát chính Pulse từ bên ngoài**. Một dịch vụ uptime miễn phí bên ngoài (healthchecks.io, UptimeRobot…) chỉ cần theo dõi mỗi URL này là biết cả hệ thống — và quan trọng hơn, biết khi **chính máy chủ Pulse chết**, điều mà Pulse tự nó không thể tự báo.
+`/healthz` is how you **watch Pulse itself from outside**. A free external uptime service (healthchecks.io, UptimeRobot…) only needs to watch this one URL to know about the whole system — and, more importantly, to know when the **Pulse host itself dies**, which Pulse cannot report on its own.
 
 ---
 
-## Chạy nền
+## Running as a service
 
 ### systemd
 
@@ -138,36 +147,36 @@ EXPOSE 3001
 CMD ["node", "src/cli.js"]
 ```
 
-Không có `npm install` vì không có gì để cài.
+No `npm install` because there is nothing to install.
 
 ---
 
-## Biến môi trường
+## Environment
 
-| Biến | Mặc định |
+| Variable | Default |
 |---|---|
 | `PULSE_PORT` | 3001 |
 | `PULSE_DATA` | `./data` |
 
 ---
 
-## Kiểm thử
+## Tests
 
 ```bash
 npm test
 ```
 
-13 test, không cần mạng: checker (dựng server thật để kiểm), lưu trữ, phân loại trạng thái, và logic chỉ-cảnh-báo-khi-đổi.
+13 tests, no network needed: checker (against a real ephemeral server), storage, status classification, and the alert-only-on-change logic.
 
 ---
 
-## Giới hạn — nên biết trước
+## Limits — know these upfront
 
-- Lịch sử của một monitor được nạp vào bộ nhớ khi đọc. Mặc định giữ 2000 điểm/monitor (~vài trăm KB). Cần hàng triệu điểm thì đây không phải công cụ phù hợp.
-- Cache và trạng thái cảnh báo nằm trong tiến trình. Chạy nhiều bản Pulse thì mỗi bản một trạng thái riêng.
-- Kiểm tra chạy in-process. Hợp cho tới khoảng vài chục monitor; hàng trăm thì nên công cụ khác.
+- A monitor's history is loaded into memory on read. Default is 2000 points/monitor (~a few hundred KB). If you need millions of points, this isn't the tool.
+- Cache and alert state live in-process. Run several Pulse instances and each has its own state.
+- Checks run in-process. Fine up to a few dozen monitors; for hundreds, use something else.
 
-Pulse cố ý nhỏ. Nếu bạn cần nhiều hơn thế, Uptime Kuma là lựa chọn tốt.
+Pulse is intentionally small. If you need more, [Uptime Kuma](https://github.com/louislam/uptime-kuma) is a great choice.
 
 ---
 

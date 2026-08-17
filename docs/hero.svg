@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" font-family="ui-monospace, 'SF Mono', Menlo, monospace" role="img" aria-label="Pulse — uptime monitoring status page">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#111a2e"/>
+      <stop offset="1" stop-color="#0b1120"/>
+    </linearGradient>
+    <linearGradient id="pulse" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#22c55e"/>
+      <stop offset="1" stop-color="#22c55e" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="420" rx="20" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="1199" height="419" rx="20" fill="none" stroke="#233047"/>
+
+  <!-- Nhịp tim: dấu hiệu "uptime" đọc được ngay -->
+  <polyline points="60,90 210,90 250,55 300,125 340,90 1030,90"
+            fill="none" stroke="url(#pulse)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="1030" cy="90" r="5" fill="#22c55e"/>
+
+  <!-- Tên + slogan -->
+  <text x="60" y="185" font-size="72" font-weight="700" fill="#f8fafc" letter-spacing="-2">Pulse</text>
+  <text x="60" y="230" font-size="24" fill="#94a3b8">Uptime monitoring in one file. No database. No dependencies.</text>
+
+  <!-- Huy hiệu tính năng -->
+  <g font-size="15" fill="#cbd5e1">
+    <rect x="60"  y="262" width="180" height="34" rx="17" fill="#172033" stroke="#233047"/>
+    <text x="80"  y="284">Zero dependency</text>
+    <rect x="252" y="262" width="140" height="34" rx="17" fill="#172033" stroke="#233047"/>
+    <text x="272" y="284">5 themes</text>
+    <rect x="404" y="262" width="240" height="34" rx="17" fill="#172033" stroke="#233047"/>
+    <text x="424" y="284">Telegram · Slack · Discord</text>
+  </g>
+
+  <!-- Thẻ trạng thái mô phỏng bên phải -->
+  <g transform="translate(760,60)">
+    <rect width="380" height="300" rx="14" fill="#0f172a" stroke="#233047"/>
+
+    <!-- pill "operational" -->
+    <rect x="20" y="20" width="340" height="44" rx="10" fill="#132b1c"/>
+    <circle cx="44" cy="42" r="6" fill="#22c55e"/>
+    <text x="62" y="47" font-size="16" fill="#22c55e" font-weight="600">All systems operational</text>
+
+    <!-- ba dòng dịch vụ với thanh uptime -->
+    <g font-size="14">
+      <!-- dịch vụ 1 -->
+      <circle cx="34" cy="100" r="5" fill="#22c55e"/>
+      <text x="52" y="105" fill="#e2e8f0">API</text>
+      <text x="360" y="105" text-anchor="end" fill="#64748b">99.9%</text>
+      <g fill="#22c55e">
+        <rect x="20" y="118" width="9" height="14" rx="2"/><rect x="32" y="118" width="9" height="14" rx="2"/>
+        <rect x="44" y="118" width="9" height="14" rx="2"/><rect x="56" y="118" width="9" height="14" rx="2"/>
+        <rect x="68" y="118" width="9" height="14" rx="2"/><rect x="80" y="118" width="9" height="14" rx="2"/>
+        <rect x="92" y="118" width="9" height="14" rx="2"/><rect x="104" y="118" width="9" height="14" rx="2"/>
+        <rect x="116" y="118" width="9" height="14" rx="2"/><rect x="128" y="118" width="9" height="14" rx="2"/>
+        <rect x="140" y="118" width="9" height="14" rx="2"/><rect x="152" y="118" width="9" height="14" rx="2"/>
+        <rect x="164" y="118" width="9" height="14" rx="2"/><rect x="176" y="118" width="9" height="14" rx="2"/>
+        <rect x="188" y="118" width="9" height="14" rx="2"/><rect x="200" y="118" width="9" height="14" rx="2"/>
+        <rect x="212" y="118" width="9" height="14" rx="2"/><rect x="224" y="118" width="9" height="14" rx="2"/>
+        <rect x="236" y="118" width="9" height="14" rx="2"/><rect x="248" y="118" width="9" height="14" rx="2"/>
+        <rect x="260" y="118" width="9" height="14" rx="2"/><rect x="272" y="118" width="9" height="14" rx="2"/>
+        <rect x="284" y="118" width="9" height="14" rx="2"/><rect x="296" y="118" width="9" height="14" rx="2"/>
+        <rect x="308" y="118" width="9" height="14" rx="2"/><rect x="320" y="118" width="9" height="14" rx="2"/>
+        <rect x="332" y="118" width="9" height="14" rx="2"/><rect x="344" y="118" width="9" height="14" rx="2"/>
+      </g>
+
+      <!-- dịch vụ 2, có vài nhịp đỏ -->
+      <circle cx="34" cy="168" r="5" fill="#22c55e"/>
+      <text x="52" y="173" fill="#e2e8f0">Web</text>
+      <text x="360" y="173" text-anchor="end" fill="#64748b">98.2%</text>
+      <g>
+        <rect x="20" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="32" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="44" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="56" y="186" width="9" height="14" rx="2" fill="#ef4444"/>
+        <rect x="68" y="186" width="9" height="14" rx="2" fill="#ef4444"/><rect x="80" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="92" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="104" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="116" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="128" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="140" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="152" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="164" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="176" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="188" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="200" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="212" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="224" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="236" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="248" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="260" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="272" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="284" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="296" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="308" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="320" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+        <rect x="332" y="186" width="9" height="14" rx="2" fill="#22c55e"/><rect x="344" y="186" width="9" height="14" rx="2" fill="#22c55e"/>
+      </g>
+
+      <!-- dịch vụ 3 -->
+      <circle cx="34" cy="236" r="5" fill="#22c55e"/>
+      <text x="52" y="241" fill="#e2e8f0">MongoDB</text>
+      <text x="360" y="241" text-anchor="end" fill="#64748b">100%</text>
+      <g fill="#22c55e">
+        <rect x="20" y="254" width="9" height="14" rx="2"/><rect x="32" y="254" width="9" height="14" rx="2"/>
+        <rect x="44" y="254" width="9" height="14" rx="2"/><rect x="56" y="254" width="9" height="14" rx="2"/>
+        <rect x="68" y="254" width="9" height="14" rx="2"/><rect x="80" y="254" width="9" height="14" rx="2"/>
+        <rect x="92" y="254" width="9" height="14" rx="2"/><rect x="104" y="254" width="9" height="14" rx="2"/>
+        <rect x="116" y="254" width="9" height="14" rx="2"/><rect x="128" y="254" width="9" height="14" rx="2"/>
+        <rect x="140" y="254" width="9" height="14" rx="2"/><rect x="152" y="254" width="9" height="14" rx="2"/>
+        <rect x="164" y="254" width="9" height="14" rx="2"/><rect x="176" y="254" width="9" height="14" rx="2"/>
+        <rect x="188" y="254" width="9" height="14" rx="2"/><rect x="200" y="254" width="9" height="14" rx="2"/>
+        <rect x="212" y="254" width="9" height="14" rx="2"/><rect x="224" y="254" width="9" height="14" rx="2"/>
+        <rect x="236" y="254" width="9" height="14" rx="2"/><rect x="248" y="254" width="9" height="14" rx="2"/>
+        <rect x="260" y="254" width="9" height="14" rx="2"/><rect x="272" y="254" width="9" height="14" rx="2"/>
+        <rect x="284" y="254" width="9" height="14" rx="2"/><rect x="296" y="254" width="9" height="14" rx="2"/>
+        <rect x="308" y="254" width="9" height="14" rx="2"/><rect x="320" y="254" width="9" height="14" rx="2"/>
+        <rect x="332" y="254" width="9" height="14" rx="2"/><rect x="344" y="254" width="9" height="14" rx="2"/>
+      </g>
+    </g>
+  </g>
+</svg>
