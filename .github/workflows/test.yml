@@ -1,0 +1,44 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      # Chạy trên nhiều bản Node để chứng minh không phụ thuộc phiên bản.
+      # node:test và type-stripping cần >= 20.
+      matrix:
+        node: [20, 22, 24]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cài Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # Không có "npm install" — dự án zero dependency. Đây chính là điểm bán hàng.
+      - name: Kiểm không có dependency runtime
+        run: |
+          node -e "const p=require('./package.json'); if(p.dependencies){console.error('Có dependency runtime, lẽ ra phải rỗng:', p.dependencies); process.exit(1)} console.log('OK: zero dependency')"
+
+      - name: Chạy test
+        run: node --test test/*.spec.js
+
+      - name: Smoke test — server lên và trả /healthz
+        run: |
+          node -e "const fs=require('fs');fs.writeFileSync('ci.json',JSON.stringify({port:3031,monitors:[{id:'x',type:'tcp',host:'127.0.0.1',port:1,interval:5,timeout:300}]}))"
+          PULSE_DATA=./ci-data node src/cli.js ci.json &
+          PID=$!
+          sleep 3
+          code=$(node -e "require('http').get('http://127.0.0.1:3031/healthz',r=>{console.log(r.statusCode);process.exit(0)}).on('error',()=>{console.log('ERR');process.exit(1)})")
+          kill $PID
+          echo "healthz trả: $code"
+          test "$code" = "503" || test "$code" = "200"

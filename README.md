@@ -6,6 +6,13 @@
   <b>English</b> · <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/nguyenquocanhz/pulse/actions/workflows/test.yml"><img src="https://github.com/nguyenquocanhz/pulse/actions/workflows/test.yml/badge.svg" alt="tests"></a>
+  <img src="https://img.shields.io/badge/dependencies-0-brightgreen" alt="zero dependencies">
+  <img src="https://img.shields.io/badge/node-%E2%89%A520-blue" alt="node >= 20">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT">
+</p>
+
 # Pulse
 
 **Uptime monitoring in one file. No database. No dependencies.**
@@ -139,15 +146,22 @@ WantedBy=multi-user.target
 
 ### Docker
 
-```dockerfile
-FROM node:22-alpine
-WORKDIR /app
-COPY . .
-EXPOSE 3001
-CMD ["node", "src/cli.js"]
+Pull the published image:
+
+```bash
+docker run -d -p 3001:3001 \
+  -v $PWD/monitors.json:/app/monitors.json:ro \
+  -v pulse-data:/app/data \
+  ghcr.io/nguyenquocanhz/pulse:latest
 ```
 
-No `npm install` because there is nothing to install.
+Or with compose:
+
+```bash
+docker compose up -d
+```
+
+The image is built and published by GitHub Actions on every version tag. No `npm install` because there is nothing to install.
 
 ---
 

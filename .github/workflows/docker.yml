@@ -1,0 +1,48 @@
+name: docker
+
+# Build và đẩy image lên GitHub Container Registry (ghcr.io).
+# Chạy khi push tag phiên bản (vd v0.1.0) hoặc kích thủ công.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # cần để đẩy lên ghcr.io
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Đăng nhập ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          # GITHUB_TOKEN có sẵn, không cần tạo secret thủ công
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Suy ra tag và nhãn
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          # ghcr yêu cầu tên image chữ thường; repository có thể có chữ hoa
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Build và đẩy
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # cache layer giữa các lần build cho nhanh
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

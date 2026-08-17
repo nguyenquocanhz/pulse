@@ -6,6 +6,13 @@
   <a href="README.md">English</a> · <b>Tiếng Việt</b>
 </p>
 
+<p align="center">
+  <a href="https://github.com/nguyenquocanhz/pulse/actions/workflows/test.yml"><img src="https://github.com/nguyenquocanhz/pulse/actions/workflows/test.yml/badge.svg" alt="tests"></a>
+  <img src="https://img.shields.io/badge/dependencies-0-brightgreen" alt="zero dependencies">
+  <img src="https://img.shields.io/badge/node-%E2%89%A520-blue" alt="node >= 20">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT">
+</p>
+
 # Pulse
 
 **Uptime monitoring trong một file. Không database. Không dependency.**

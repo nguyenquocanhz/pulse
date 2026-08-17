@@ -1,0 +1,28 @@
+# Chạy Pulse bằng image dựng sẵn trên ghcr.io:
+#   docker compose up -d
+#
+# Hoặc build tại chỗ từ mã nguồn:
+#   docker compose up -d --build
+
+name: pulse
+
+services:
+  pulse:
+    # Dùng image đã publish. Đổi <you> thành namespace GitHub của bạn.
+    image: ghcr.io/nguyenquocanhz/pulse:latest
+    # Bỏ comment dòng dưới để build tại chỗ thay vì kéo image:
+    # build: .
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      # Config chỉ đọc — chỉnh monitors.json trên host rồi restart container
+      - ./monitors.json:/app/monitors.json:ro
+      # Lịch sử kiểm tra: giữ qua các lần restart
+      - pulse-data:/app/data
+    # PULSE_CONFIG cho phép đổi đường dẫn config nếu mount chỗ khác
+    environment:
+      PULSE_CONFIG: monitors.json
+
+volumes:
+  pulse-data:
