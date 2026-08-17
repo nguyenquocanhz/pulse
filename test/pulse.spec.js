@@ -140,6 +140,9 @@ test('server: snapshot phân biệt operational / degraded / down', () => {
   };
   const pulse = new Pulse(config, { dataDir: dir });
 
+  // chưa kiểm gì: unknown, KHÔNG được là operational
+  assert.equal(pulse.snapshot().overall, 'unknown', 'chưa có dữ liệu thì không được báo bình thường');
+
   pulse.store.append('a', { t: 1, ok: true, ms: 10 });
   pulse.store.append('b', { t: 1, ok: true, ms: 10 });
   assert.equal(pulse.snapshot().overall, 'operational');

@@ -189,6 +189,7 @@
       operational: 'Tất cả hệ thống bình thường',
       degraded: 'Một số dịch vụ gặp sự cố',
       down: 'Hệ thống ngừng hoạt động',
+      unknown: 'Đang chờ dữ liệu…',
     };
     const fmtMs = (ms) => (ms == null ? '—' : ms + 'ms');
     const fmtTime = (t) => new Date(t).toLocaleTimeString('vi-VN');
@@ -233,7 +234,8 @@
 
         const o = document.getElementById('overall');
         o.className = 'overall ' + data.overall;
-        o.innerHTML = `<span class="dot ${data.overall === 'operational' ? 'up' : 'down'}"></span>${OVERALL_TEXT[data.overall] || data.overall}`;
+        const dotState = data.overall === 'operational' ? 'up' : data.overall === 'unknown' ? 'unknown' : 'down';
+        o.innerHTML = `<span class="dot ${dotState}"></span>${OVERALL_TEXT[data.overall] || data.overall}`;
 
         document.getElementById('list').innerHTML = data.monitors.map(card).join('');
         document.getElementById('footer').textContent = 'Cập nhật ' + new Date(data.updatedAt).toLocaleString('vi-VN');

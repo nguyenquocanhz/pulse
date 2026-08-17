@@ -77,13 +77,24 @@ export class Pulse {
     }));
 
     const down = monitors.filter((m) => m.state === 'down');
+    const up = monitors.filter((m) => m.state === 'up');
+
+    /**
+     * "operational" chỉ khi CÓ ÍT NHẤT một monitor đã lên xanh và không cái nào
+     * đang đỏ. Nếu toàn bộ còn "unknown" (chưa kiểm xong lần đầu, hoặc mới khởi
+     * động) thì trạng thái là "unknown" — KHÔNG được báo "tất cả bình thường"
+     * khi thật ra chưa có dữ liệu nào, vì đó là lời trấn an sai.
+     */
+    let overall;
+    if (down.length && down.length === monitors.length) overall = 'down';
+    else if (down.length) overall = 'degraded';
+    else if (up.length) overall = 'operational';
+    else overall = 'unknown';
 
     return {
       title: this.config.title || 'Pulse',
       updatedAt: new Date().toISOString(),
-      // "degraded" khi có cái sập nhưng không phải tất cả — phân biệt được
-      // "một dịch vụ lỗi" với "cả hệ thống chết"
-      overall: down.length === 0 ? 'operational' : down.length === monitors.length ? 'down' : 'degraded',
+      overall,
       monitors,
     };
   }
