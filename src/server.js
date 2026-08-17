@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { runCheck } from './checker.js';
+import { runJourney } from './journey.js';
 import { Store } from './store.js';
 import { notify } from './notify.js';
 
@@ -26,9 +27,11 @@ export class Pulse {
   }
 
   async checkOne(monitor) {
-    const result = await runCheck(monitor);
+    const result = monitor.type === 'journey' ? await runJourney(monitor) : await runCheck(monitor);
     const record = { t: Date.now(), ok: result.ok, ms: result.ms, status: result.status };
     if (result.error) record.error = result.error;
+    // journey: lưu kèm chi tiết từng bước để hiện latency mỗi chặng
+    if (result.steps) record.steps = result.steps;
 
     this.store.append(monitor.id, record);
 

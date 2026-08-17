@@ -159,3 +159,38 @@ Chỉ xanh khi trang có chữ "Đăng nhập" — mất chữ đó nghĩa là a
 
 `interval: 10, retries: 1` bắt được sự cố từ ~10 giây, nhưng cũng nhạy với mọi
 nhịp mạng. Chỉ dùng cho dịch vụ thật sự quan trọng, không dùng đại trà.
+
+---
+
+## Journey check — theo dõi cả một luồng (như trace)
+
+Thay vì ping từng endpoint rời rạc, đi qua đúng hành trình người dùng và đo
+latency từng chặng. Bước sau dùng được giá trị trích từ bước trước, đúng như một
+request thật đi qua các service phụ thuộc nhau.
+
+```json
+{
+  "id": "watch-flow",
+  "name": "Luồng xem phim",
+  "type": "journey",
+  "interval": 60,
+  "steps": [
+    { "name": "Trang chủ", "url": "http://192.168.100.169:6003/phimhay" },
+    {
+      "name": "Danh sách phim",
+      "url": "http://192.168.100.169:6001/v1/movie/filterV2?limit=1",
+      "keyword": "items",
+      "extract": { "movieId": { "json": "result.items.0.public_id" } }
+    },
+    {
+      "name": "Lấy link phát",
+      "url": "http://192.168.100.169:6001/v1/player/getLink?movie_id={{movieId}}"
+    }
+  ]
+}
+```
+
+Trang trạng thái sẽ hiện từng chặng với latency riêng — chặng nào chậm bất thường
+thấy ngay, không cần nhúng gì vào service. `extract` lấy giá trị từ response
+(`json` theo đường dẫn `a.b.0.c`, hoặc `regex` với nhóm bắt), rồi `{{tên}}` chèn
+vào URL bước sau.

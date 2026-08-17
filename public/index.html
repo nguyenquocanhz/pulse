@@ -123,6 +123,17 @@
     .bar { flex: 1; min-width: 2px; border-radius: 2px; background: var(--up); opacity: .9; height: 100%; }
     .bar.down { background: var(--down); }
 
+    /* journey: các chặng của một luồng, hiện như trace */
+    .journey { margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
+    .jstep { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .jdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .jdot.up { background: var(--up); } .jdot.down { background: var(--down); }
+    .jname { flex-shrink: 0; width: 130px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .jbar { flex: 1; height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+    .jfill { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+    .jfill.down { background: var(--down); }
+    .jms { flex-shrink: 0; width: 56px; text-align: right; color: var(--muted); font-family: var(--mono); }
+
     .err { color: var(--down); font-size: 12px; margin-top: 10px; font-family: var(--mono); word-break: break-word; }
     footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 28px; }
 
@@ -262,6 +273,8 @@
       const uptime = m.uptime == null ? '—' : m.uptime + '%';
       const err = state === 'down' && m.last && m.last.error
         ? `<div class="err">${esc(m.last.error)}</div>` : '';
+      // journey: hiện latency từng chặng như một trace
+      const steps = m.last && m.last.steps ? journeySteps(m.last.steps) : '';
       return `
         <div class="card">
           <div class="card-top">
@@ -275,8 +288,26 @@
             </div>
           </div>
           <div class="bars">${bars(m.history)}</div>
+          ${steps}
           ${err}
         </div>`;
+    }
+
+    // Vẽ các chặng của journey như một trace: mỗi chặng một dòng, có latency,
+    // độ dài thanh tỉ lệ với latency để thấy chặng nào chậm nhất.
+    function journeySteps(steps) {
+      const max = Math.max(...steps.map((s) => s.ms || 0), 1);
+      const rows = steps.map((s) => {
+        const w = Math.max(3, Math.round(((s.ms || 0) / max) * 100));
+        return `
+          <div class="jstep">
+            <span class="jdot ${s.ok ? 'up' : 'down'}"></span>
+            <span class="jname">${esc(s.name)}</span>
+            <span class="jbar"><span class="jfill ${s.ok ? '' : 'down'}" style="width:${w}%"></span></span>
+            <span class="jms">${fmtMs(s.ms)}</span>
+          </div>`;
+      }).join('');
+      return `<div class="journey">${rows}</div>`;
     }
 
     async function tick() {
