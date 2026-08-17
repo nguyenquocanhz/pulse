@@ -1,29 +1,32 @@
 # Pulse
 
-Uptime monitoring và status page gọn trong **một tiến trình Node, không phụ thuộc thư viện ngoài**. Không database, không build step, không Docker bắt buộc.
+**Uptime monitoring trong một file. Không database. Không dependency.**
 
-Kiểm tra dịch vụ theo chu kỳ, hiện trang trạng thái, và cảnh báo qua Telegram / Slack / Discord / Zalo / Messenger khi có sự cố.
+Kiểm tra dịch vụ, hiện status page, cảnh báo khi có sự cố — tất cả trong một tiến trình Node thuần. `git clone` xong chạy ngay, không cài gì.
 
 ```bash
 git clone https://github.com/<ban>/pulse.git && cd pulse
-cp monitors.example.json monitors.json   # sửa lại
+cp monitors.example.json monitors.json
 npm start
 ```
 
-Mở `http://localhost:3001`. Xong.
+Mở `http://localhost:3001`.
+
+- **Zero dependency** — chỉ core Node, không `npm install`
+- **Không database** — lịch sử ghi NDJSON, tự cắt bớt
+- **5 theme** — Slate, Midnight (OLED), Terminal, Nord, Sáng
+- **Cảnh báo** — Telegram, Slack, Discord, Zalo, Messenger; chỉ báo khi đổi trạng thái
+- **`/healthz`** — để dịch vụ ngoài giám sát chính Pulse
+
+Toàn bộ mã đọc hết trong mười phút.
 
 ---
 
-## Vì sao có Pulse
+## Bên trong
 
-Các công cụ uptime tự host phần lớn kéo theo database, hàng đống dependency, và một quy trình build. Cho một homelab chỉ theo dõi vài dịch vụ, đó là quá nặng.
-
-Pulse là **một tiến trình, zero dependency, chạy trên Node thuần**. Toàn bộ mã đủ ngắn để đọc hết trong mười phút.
-
-- Không database — lịch sử ghi ra file NDJSON, tự cắt bớt
-- Không framework — trang trạng thái là một file HTML tĩnh
-- Không dependency — chỉ dùng core Node, cài trong 0 giây
-- Chạy được bằng `node src/cli.js`, hoặc bỏ vào Docker/systemd tuỳ ý
+- Không framework — status page là một file HTML tĩnh, đổi theme lưu localStorage
+- Lưu trữ là file NDJSON mỗi monitor, không cần dịch vụ ngoài
+- Chạy `node src/cli.js`, hoặc bỏ vào Docker/systemd tuỳ ý
 
 ---
 

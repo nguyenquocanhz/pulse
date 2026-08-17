@@ -4,3 +4,4 @@ monitors.json
 *.log
 .DS_Store
 .env
+docs/screenshot*.png

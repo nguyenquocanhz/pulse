@@ -3,86 +3,202 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pulse — Trạng thái</title>
+  <title>Pulse</title>
   <style>
+    /* =========================================================================
+       THEME. Mỗi theme là một bộ biến CSS. Đổi theme = đổi [data-theme] ở <html>.
+       Rút từ ui-ux-pro-max: slate dev-tool, OLED đen, terminal matrix, nord, sáng.
+       ========================================================================= */
     :root {
-      --bg: #0d1117; --panel: #161b22; --border: #21262d;
-      --text: #e6edf3; --muted: #7d8590;
-      --up: #3fb950; --down: #f85149; --degraded: #d29922;
+      --radius: 10px;
+      --font: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+      --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
     }
+
+    /* Slate — mặc định, nền tối dev-tool + xanh "run" */
+    :root, [data-theme="slate"] {
+      --bg: #0f172a; --panel: #1e293b; --panel-2: #172033; --border: #334155;
+      --text: #f8fafc; --muted: #94a3b8;
+      --up: #22c55e; --down: #ef4444; --degraded: #eab308;
+      --accent: #22c55e; --glow: none; --body-font: var(--font);
+    }
+
+    /* Midnight — OLED đen tuyệt đối, tiết kiệm pin, tương phản cao */
+    [data-theme="midnight"] {
+      --bg: #000000; --panel: #0a0a0a; --panel-2: #0f0f0f; --border: #1f1f1f;
+      --text: #ffffff; --muted: #8a8a8a;
+      --up: #00e676; --down: #ff5252; --degraded: #ffd740;
+      --accent: #00e676; --glow: none; --body-font: var(--font);
+    }
+
+    /* Terminal — matrix xanh trên đen, chữ monospace, có ánh sáng nhẹ */
+    [data-theme="terminal"] {
+      --bg: #0d0d0d; --panel: #111511; --panel-2: #0f130f; --border: #1c261c;
+      --text: #00ff66; --muted: #4c8a5c;
+      --up: #00ff66; --down: #ff3366; --degraded: #ffcc00;
+      --accent: #00ff66; --glow: 0 0 8px currentColor; --body-font: var(--mono);
+    }
+
+    /* Nord — bảng màu lạnh dịu, rất được ưa chuộng */
+    [data-theme="nord"] {
+      --bg: #2e3440; --panel: #3b4252; --panel-2: #353c4a; --border: #4c566a;
+      --text: #eceff4; --muted: #81a1c1;
+      --up: #a3be8c; --down: #bf616a; --degraded: #ebcb8b;
+      --accent: #88c0d0; --glow: none; --body-font: var(--font);
+    }
+
+    /* Light — sáng, sạch, tương phản đạt WCAG */
+    [data-theme="light"] {
+      --bg: #f6f8fa; --panel: #ffffff; --panel-2: #f0f3f6; --border: #d0d7de;
+      --text: #1f2328; --muted: #656d76;
+      --up: #1a7f37; --down: #cf222e; --degraded: #9a6700;
+      --accent: #1a7f37; --glow: none; --body-font: var(--font);
+    }
+
+    /* Người chưa chọn theme: theo hệ điều hành */
     @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f6f8fa; --panel: #fff; --border: #d0d7de;
+      :root:not([data-theme]) {
+        --bg: #f6f8fa; --panel: #ffffff; --panel-2: #f0f3f6; --border: #d0d7de;
         --text: #1f2328; --muted: #656d76;
+        --up: #1a7f37; --down: #cf222e; --degraded: #9a6700; --accent: #1a7f37;
       }
     }
+
     * { box-sizing: border-box; }
     body {
       margin: 0; background: var(--bg); color: var(--text);
-      font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.5;
+      font-family: var(--body-font); line-height: 1.5;
+      transition: background .2s ease, color .2s ease;
     }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
-    header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
-    h1 { font-size: 20px; margin: 0; }
+    .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    h1 { font-size: 20px; margin: 0; letter-spacing: -0.02em; }
+
+    /* ---- bộ chọn theme ---- */
+    .themes { display: flex; gap: 6px; }
+    .swatch {
+      width: 22px; height: 22px; border-radius: 50%; cursor: pointer; padding: 0;
+      border: 2px solid transparent; transition: border-color .15s ease, transform .15s ease;
+      position: relative;
+    }
+    .swatch:hover { transform: translateY(-1px); }
+    .swatch[aria-pressed="true"] { border-color: var(--text); }
+    .swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
     .overall {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 16px; border-radius: 8px; font-weight: 600;
-      margin: 18px 0 24px; width: 100%;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-radius: var(--radius); font-weight: 600;
+      margin: 20px 0 22px; border: 1px solid var(--border);
     }
-    .overall.operational { background: color-mix(in srgb, var(--up) 15%, transparent); color: var(--up); }
-    .overall.degraded    { background: color-mix(in srgb, var(--degraded) 15%, transparent); color: var(--degraded); }
-    .overall.down        { background: color-mix(in srgb, var(--down) 15%, transparent); color: var(--down); }
+    .overall.operational { color: var(--up); }
+    .overall.degraded    { color: var(--degraded); }
+    .overall.down        { color: var(--down); }
+    .overall .dot { box-shadow: var(--glow); }
+
     .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .dot.up { background: var(--up); } .dot.down { background: var(--down); }
     .dot.unknown { background: var(--muted); }
+
     .card {
       background: var(--panel); border: 1px solid var(--border);
-      border-radius: 10px; padding: 16px 18px; margin-bottom: 12px;
+      border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
+      transition: background .2s ease, border-color .2s ease;
     }
     .card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .name { display: flex; align-items: center; gap: 10px; font-weight: 600; }
-    .target { color: var(--muted); font-size: 12px; font-family: ui-monospace, monospace; margin-top: 2px; }
+    .name .dot { box-shadow: var(--glow); }
+    .target { color: var(--muted); font-size: 12px; font-family: var(--mono); margin-top: 3px; }
     .metrics { text-align: right; font-size: 13px; color: var(--muted); white-space: nowrap; }
     .metrics b { color: var(--text); font-weight: 600; }
-    .bars { display: flex; gap: 2px; margin-top: 14px; height: 28px; align-items: flex-end; }
-    .bar { flex: 1; min-width: 2px; border-radius: 2px; background: var(--up); opacity: .85; }
+
+    .bars { display: flex; gap: 2px; margin-top: 14px; height: 26px; align-items: flex-end; }
+    .bar { flex: 1; min-width: 2px; border-radius: 2px; background: var(--up); opacity: .9; height: 100%; }
     .bar.down { background: var(--down); }
-    .bar.gap { background: var(--border); }
-    .err { color: var(--down); font-size: 12px; margin-top: 10px; font-family: ui-monospace, monospace; word-break: break-word; }
-    footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 30px; }
-    .spin { animation: s 1s linear infinite; display: inline-block; }
-    @keyframes s { to { transform: rotate(360deg); } }
+
+    .err { color: var(--down); font-size: 12px; margin-top: 10px; font-family: var(--mono); word-break: break-word; }
+    footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 28px; }
+
+    /* Spinner SVG, không dùng emoji làm icon */
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+      .spin { animation-duration: 3s; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1 id="title">Pulse</h1>
+      <div class="themes" id="themes" role="group" aria-label="Chọn giao diện"></div>
     </header>
+
     <div id="overall" class="overall">
-      <span class="spin">◌</span> Đang tải…
+      <svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"/>
+        <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      Đang tải…
     </div>
+
     <div id="list"></div>
     <footer id="footer"></footer>
   </div>
 
   <script>
+    // ---- theme ----
+    const THEMES = [
+      { id: 'slate',    color: '#22c55e', label: 'Slate' },
+      { id: 'midnight', color: '#000000', label: 'Midnight' },
+      { id: 'terminal', color: '#00ff66', label: 'Terminal' },
+      { id: 'nord',     color: '#88c0d0', label: 'Nord' },
+      { id: 'light',    color: '#ffffff', label: 'Sáng' },
+    ];
+    const KEY = 'pulse-theme';
+
+    function applyTheme(id) {
+      document.documentElement.setAttribute('data-theme', id);
+      localStorage.setItem(KEY, id);
+      document.querySelectorAll('.swatch').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b.dataset.theme === id)),
+      );
+    }
+
+    function buildThemeSwitcher() {
+      const host = document.getElementById('themes');
+      host.innerHTML = THEMES.map((t) =>
+        `<button class="swatch" data-theme="${t.id}" title="${t.label}"
+           aria-label="Giao diện ${t.label}" aria-pressed="false"
+           style="background:${t.color}; border-color:${t.color === '#ffffff' ? '#d0d7de' : 'transparent'}"></button>`,
+      ).join('');
+      host.querySelectorAll('.swatch').forEach((b) =>
+        b.addEventListener('click', () => applyTheme(b.dataset.theme)),
+      );
+    }
+
+    const saved = localStorage.getItem(KEY);
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+    buildThemeSwitcher();
+    if (saved) applyTheme(saved);
+
+    // ---- trạng thái ----
     const OVERALL_TEXT = {
       operational: 'Tất cả hệ thống bình thường',
       degraded: 'Một số dịch vụ gặp sự cố',
       down: 'Hệ thống ngừng hoạt động',
     };
-
     const fmtMs = (ms) => (ms == null ? '—' : ms + 'ms');
     const fmtTime = (t) => new Date(t).toLocaleTimeString('vi-VN');
-    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
     function bars(history) {
       if (!history || !history.length) return '';
-      // vẽ tối đa 40 thanh cuối cho gọn trên mobile
-      const h = history.slice(-40);
-      return h.map((r) => `<div class="bar ${r.ok ? '' : 'down'}" title="${fmtTime(r.t)} · ${fmtMs(r.ms)}"></div>`).join('');
+      return history.slice(-40).map((r) =>
+        `<div class="bar ${r.ok ? '' : 'down'}" title="${fmtTime(r.t)} · ${fmtMs(r.ms)}"></div>`,
+      ).join('');
     }
 
     function card(m) {
@@ -117,13 +233,12 @@
 
         const o = document.getElementById('overall');
         o.className = 'overall ' + data.overall;
-        o.textContent = OVERALL_TEXT[data.overall] || data.overall;
+        o.innerHTML = `<span class="dot ${data.overall === 'operational' ? 'up' : 'down'}"></span>${OVERALL_TEXT[data.overall] || data.overall}`;
 
         document.getElementById('list').innerHTML = data.monitors.map(card).join('');
-        document.getElementById('footer').textContent =
-          'Cập nhật ' + new Date(data.updatedAt).toLocaleString('vi-VN');
-      } catch (e) {
-        document.getElementById('overall').textContent = 'Không kết nối được máy chủ Pulse';
+        document.getElementById('footer').textContent = 'Cập nhật ' + new Date(data.updatedAt).toLocaleString('vi-VN');
+      } catch {
+        document.getElementById('overall').innerHTML = '<span class="dot down"></span>Không kết nối được máy chủ Pulse';
       }
     }
 
