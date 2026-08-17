@@ -1,0 +1,76 @@
+{
+  "title": "Trạng thái hệ thống",
+  "port": 3001,
+
+  "monitors": [
+    {
+      "id": "web",
+      "name": "Website",
+      "type": "http",
+      "url": "https://example.com",
+      "interval": 60,
+      "retries": 2,
+      "expectStatus": [200, 301, 302]
+    },
+    {
+      "id": "api",
+      "name": "API",
+      "type": "http",
+      "url": "http://192.168.100.169:6001/v1/config/list",
+      "interval": 30,
+      "keyword": "site"
+    },
+    {
+      "id": "player",
+      "name": "Trình phát",
+      "type": "http",
+      "url": "http://192.168.100.169:3013/play/",
+      "interval": 60
+    },
+    {
+      "id": "mongo",
+      "name": "MongoDB",
+      "type": "tcp",
+      "host": "192.168.100.169",
+      "port": 27017,
+      "interval": 60
+    }
+  ],
+
+  "notifications": [
+    {
+      "type": "telegram",
+      "token": "123456:ABC-token-bot-cua-ban",
+      "chatId": "123456789"
+    },
+    {
+      "_comment": "Slack: tạo Incoming Webhook rồi dán URL vào đây",
+      "type": "slack",
+      "url": "https://hooks.slack.com/services/XXX/YYY/ZZZ"
+    },
+    {
+      "_comment": "Discord: Server Settings > Integrations > Webhooks",
+      "type": "discord",
+      "url": "https://discord.com/api/webhooks/XXX/YYY",
+      "username": "Pulse"
+    },
+    {
+      "_comment": "Zalo Official Account. Cần OA access token và user_id người nhận.",
+      "type": "zalo",
+      "token": "oa-access-token",
+      "userId": "user-id-nguoi-nhan"
+    },
+    {
+      "_comment": "Messenger Send API chính thức. Cần Page token và PSID.",
+      "type": "messenger",
+      "token": "page-access-token",
+      "psid": "page-scoped-id-nguoi-nhan"
+    },
+    {
+      "_comment": "Webhook chung: nhận JSON đầy đủ trạng thái",
+      "type": "webhook",
+      "url": "https://example.com/hook",
+      "headers": { "authorization": "Bearer xxx" }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "pulse",
+  "version": "0.1.0",
+  "description": "Uptime monitoring and status page in a single Node process. Zero dependencies.",
+  "type": "module",
+  "bin": { "pulse": "./src/cli.js" },
+  "main": "./src/server.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test test/*.spec.js"
+  },
+  "keywords": [
+    "uptime",
+    "monitoring",
+    "status-page",
+    "healthcheck",
+    "self-hosted",
+    "zero-dependency",
+    "homelab"
+  ],
+  "license": "MIT",
+  "files": ["src", "public", "monitors.example.json", "README.md", "LICENSE"]
+}
